@@ -1,0 +1,2 @@
+mode,eps,min_samples,clusters,assigned_n,noise_count,noise_percent,coverage_percent,minimum_cluster_size,maximum_cluster_size,balance_ratio,cluster_sizes,silhouette,davies_bouldin,calinski_harabasz,dunn,mean_eta_squared,max_eta_squared,mean_omega_squared,fdr_significant_count,clinical_variables_evaluated
+native_variable_k,0.4742157916242847,5,2,293,137,31.86046511627907,68.13953488372093,4,289,72.25,"{""0"": 289, ""1"": 4}",0.20225080847740173,0.7730385180776923,9.456900505313797,0.11296716467544779,0.002868361994277405,0.011204680589685947,0.001290795541020589,0,6

@@ -1,0 +1,5 @@
+mode,status,eps,min_samples,clusters,assigned_n,noise_count,noise_percent,coverage_percent,minimum_cluster_size,maximum_cluster_size,balance_ratio,silhouette,davies_bouldin,calinski_harabasz,dunn,cluster_sizes,original_k_guided_score,native_score
+original_k_guided,SELECTED,0.4742157916242847,5.0,2.0,293.0,137.0,31.86046511627907,68.13953488372093,4.0,289.0,72.25,0.20225080847740173,0.7730385180776923,9.456900505313797,0.11296716467544779,"{""0"": 289, ""1"": 4}",0.08706048700535772,0.1170604870053577
+native_variable_k,SELECTED,0.4742157916242847,5.0,2.0,293.0,137.0,31.86046511627907,68.13953488372093,4.0,289.0,72.25,0.20225080847740173,0.7730385180776923,9.456900505313797,0.11296716467544779,"{""0"": 289, ""1"": 4}",0.08706048700535772,0.1170604870053577
+matched_k5_strict,NO_ELIGIBLE_SOLUTION,,,,,,,,,,,,,,,,,
+matched_k5_relaxed_diagnostic,NO_ELIGIBLE_SOLUTION,,,,,,,,,,,,,,,,,
