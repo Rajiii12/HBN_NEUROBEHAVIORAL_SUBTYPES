@@ -1,0 +1,6 @@
+Method,Silhouette,Davies_Bouldin,Calinski_Harabasz,Dunn_index,Minimum_cluster_size,Balance_ratio,Mean_eta_squared
+PCA--KM,0.0507,3.2012,20.87,0.1679,9,22.44,0.0116
+PCA--SC,0.0295,3.4664,18.76,0.156,23,8.0,0.0209
+CNN-AE--KM,0.029,3.7166,15.11,0.2531,6,32.5,0.0106
+CNN-AE--SC,0.0155,4.0779,13.63,0.2319,23,8.0,0.017
+EPG-SD,0.4818,0.6485,596.14,0.0427,48,3.52,0.3165
