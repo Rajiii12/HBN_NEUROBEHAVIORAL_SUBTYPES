@@ -1,0 +1,14 @@
+
+# Generated Python, model, and participant-level outputs
+__pycache__/
+*.py[cod]
+*.npy
+*.pt
+**/subject_metadata*.csv
+**/subject_subtypes.csv
+**/posterior_mean.csv
+**/latent_embeddings*.csv
+**/umap_coordinates.csv
+**/clinical_stats.csv
+**/subsample_runs.csv
+**/bootstrap_runs.csv
