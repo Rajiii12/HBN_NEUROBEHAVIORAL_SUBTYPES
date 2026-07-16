@@ -12,3 +12,8 @@ __pycache__/
 **/clinical_stats.csv
 **/subsample_runs.csv
 **/bootstrap_runs.csv
+
+# Participant-level validation outputs
+**/labels_K*.csv
+**/selected_saved_label_sources.csv
+**/verification_manifest.json
