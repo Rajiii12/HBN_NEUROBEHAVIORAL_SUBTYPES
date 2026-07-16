@@ -1,8 +1,0 @@
-numpy
-pandas
-scipy
-scikit-learn
-statsmodels
-torch
-umap-learn
-openpyxl
