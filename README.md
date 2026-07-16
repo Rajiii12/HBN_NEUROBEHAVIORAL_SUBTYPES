@@ -131,11 +131,21 @@ Conventional, adapted EEG, and deep-clustering comparisons:
 
 ### `results/table/`
 
-Contains participant-free aggregate CSV evidence for manuscript tables.
+Contains participant-free aggregate outputs for the validation,
+sensitivity, ablation, and baseline analyses.
 
-Verified participant-free table evidence currently covers Tables:
+Aggregate result files currently cover Tables 9 through 32.
 
-`9 through 32`.
+Key sensitivity and ablation result files include:
+
+- `T13_joint_hyperparameter_selection.csv`
+- `T14_alpha_weight_sensitivity.csv`
+- `T26_umap_component_ablation.csv`
+
+These files contain aggregate metrics only; participant-level
+embeddings, subtype assignments, metadata, and intermediate graph
+representations are not included.
+
 ### `figures/`
 
 Contains the final manuscript figures in PNG and PDF formats.
