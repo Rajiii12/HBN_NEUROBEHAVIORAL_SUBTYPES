@@ -1,0 +1,11 @@
+numpy
+pandas
+scipy
+scikit-learn
+torch
+tqdm
+mne
+mne-icalabel
+autoreject
+openpyxl
+jupyter
