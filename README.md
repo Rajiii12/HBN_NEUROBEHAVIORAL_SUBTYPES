@@ -136,13 +136,6 @@ Contains participant-free aggregate CSV evidence for manuscript tables.
 Verified participant-free table evidence currently covers Tables:
 
 `9 through 32`.
-
-The reconciled proof files for the previously unresolved analyses are:
-
-- `T13_joint_hyperparameter_selection_corrected.csv`
-- `T14_alpha_weight_sensitivity.csv`
-- `T26_umap_component_ablation_corrected.csv`
-
 ### `figures/`
 
 Contains the final manuscript figures in PNG and PDF formats.
