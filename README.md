@@ -79,8 +79,8 @@ Controlled sensitivity and representation-ablation analyses:
 - `12_alpha_joint_selection.py`
   Joint alpha and neighborhood configuration analysis.
 
-- `13_alpha_weight_sensitivity_missing_values.py`
-  Fixed-pipeline alpha-weight sensitivity analysis.
+- `13_alpha_weight_sensitivity_final_pipeline.py`
+  Fixed alpha-weight sweep using the same 64-to-16, 500-epoch VGAE pipeline as the selected EPG-SD model.
 
 - `14_phenotype_similarity_sensitivity.py`
   Compares cosine, correlation, Euclidean-RBF, and Mahalanobis-RBF
@@ -99,6 +99,9 @@ Controlled sensitivity and representation-ablation analyses:
 
 - `18_umap_seed_robustness.py`
   Evaluates robustness across UMAP random initializations.
+
+- `26_umap_component_ablation.py`
+  Compares spectral clustering directly on VGAE embeddings with the final VGAE-UMAP-spectral pipeline.
 
 ### `scripts/baselines/`
 
@@ -130,10 +133,15 @@ Conventional, adapted EEG, and deep-clustering comparisons:
 
 Contains participant-free aggregate CSV evidence for manuscript tables.
 
-Verified table evidence currently covers Tables:
+Verified participant-free table evidence currently covers Tables:
 
-`9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 27, 28, 29, 30, 31, and 32`.
+`9 through 32`.
 
+The reconciled proof files for the previously unresolved analyses are:
+
+- `T13_joint_hyperparameter_selection_corrected.csv`
+- `T14_alpha_weight_sensitivity.csv`
+- `T26_umap_component_ablation_corrected.csv`
 
 ### `figures/`
 
