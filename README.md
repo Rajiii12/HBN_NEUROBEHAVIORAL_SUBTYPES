@@ -204,3 +204,34 @@ The public repository intentionally excludes:
 
 Only code, figures, and aggregate participant-free result tables are
 included.
+
+<!-- NESTED_ALPHA_K_VALIDATION_START -->
+
+## Nested alpha/K validation
+
+The script
+`scripts/validation/27_nested_alpha_k_subject_resampling.py`
+implements five-fold nested subject-level evaluation of the
+EEG--phenotype fusion weight `alpha` and subtype count `K`.
+
+Two complementary analyses are reported:
+
+1. An unrestricted nested model-selection analysis in which candidate
+   `alpha` and `K` configurations are selected using outer-development
+   subjects and evaluated on held-out subjects.
+2. A prespecified held-out evaluation using `alpha=0.6` and `K=5`, where
+   the configuration is fixed rather than selected from competing values.
+
+The corresponding public aggregate outputs are available in
+`results/table/`:
+
+- `nested_model_selection_outer_folds.csv`
+- `nested_model_selection_aggregate_metrics.csv`
+- `prespecified_alpha06_k5_outer_folds.csv`
+- `prespecified_alpha06_k5_aggregate_metrics.csv`
+- `nested_selection_vs_prespecified_summary.csv`
+
+Participant identifiers, subject-level assignments, embeddings, model
+weights, and private fold-membership files are not included.
+
+<!-- NESTED_ALPHA_K_VALIDATION_END -->

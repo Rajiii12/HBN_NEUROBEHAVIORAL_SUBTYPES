@@ -34,3 +34,4 @@ __pycache__/
 **/selected_configurations.csv
 **/run_manifest.json
 **/diagnostic_manifest.json
+.ipynb_checkpoints/
