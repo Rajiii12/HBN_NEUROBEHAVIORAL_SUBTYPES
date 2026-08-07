@@ -68,9 +68,9 @@ Additional validation analyses:
   Evaluates K=2 through K=10 using internal metrics, eigengaps, cluster
   sizes, balance, and repeated-subset stability.
 
-- `11_k456_heldout_age_ehq.py`
-  Evaluates held-out Age and EHQ effects for K=4, K=5, and K=6 using
-  ANOVA, Kruskal–Wallis tests, effect sizes, and FDR correction.
+- `11_k456_heldout_age_ehq_sex.py`
+  Evaluates held-out age, EHQ, and sex associations for K=4, K=5, and K=6
+  using ANOVA, Kruskal-Wallis, Pearson chi-square, Cramer's V, and FDR correction.
 
 ### `scripts/sensitivity_ablation/`
 
@@ -136,15 +136,18 @@ sensitivity, ablation, and baseline analyses.
 
 Aggregate result files currently cover Tables 9 through 32.
 
+Key held-out robustness result files include:
+
+- `T10_k456_heldout_robustness_wide.csv`
+
+
 Key sensitivity and ablation result files include:
 
 - `T13_joint_hyperparameter_selection.csv`
 - `T14_alpha_weight_sensitivity.csv`
 - `T26_umap_component_ablation.csv`
 
-These files contain aggregate metrics only; participant-level
-embeddings, subtype assignments, metadata, and intermediate graph
-representations are not included.
+
 
 ### `figures/`
 

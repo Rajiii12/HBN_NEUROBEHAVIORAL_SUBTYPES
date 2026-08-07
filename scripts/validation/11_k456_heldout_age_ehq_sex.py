@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-Compute held-out Age/EHQ robustness for K=4,5,6 from SAVED labels only.
+Reproduce held-out age, EHQ, and sex associations for K=4, 5, and 6
+from saved subtype labels.
 
-This script does not rerun EEG preprocessing, CNN-AE, PCA, graph construction,
-VGAE, UMAP, or spectral clustering. It searches the project for saved K-selection
-labels, verifies them against the expected K-selection cluster-size signatures,
-aligns them to subject-level clinical data, and writes exact statistics and LaTeX rows.
+The script does not rerun EEG preprocessing, representation learning,
+graph construction, VGAE training, UMAP, or spectral clustering.
+It verifies saved K=4/5/6 partitions, aligns them with subject-level
+metadata, reproduces the continuous age/EHQ analyses, and evaluates
+the categorical sex-subtype association using Pearson's chi-square
+test and Cramer's V.
 """
 from __future__ import annotations
 
@@ -52,6 +55,7 @@ VAR_ALIASES = {
     "attention": {"attention", "attn", "attentionfactor", "attention_factor"},
     "internalizing": {"internalizing", "internalising", "internalizingfactor", "internalizing_factor"},
     "externalizing": {"externalizing", "externalising", "externalizingfactor", "externalizing_factor"},
+    "sex": {"sex", "biological_sex"},
 }
 LABEL_TOKENS = ("label", "labels", "cluster", "clusters", "subtype", "assignment")
 
@@ -251,7 +255,7 @@ def arrays_equivalent(a: np.ndarray, b: np.ndarray) -> bool:
 def choose_candidate(cands: List[LabelCandidate], k: int) -> LabelCandidate:
     if not cands:
         raise RuntimeError(
-            f"No saved K={k} label vector matched the expected K-selection signature: "
+            f"No saved K={k} label vector matched Table 9 signature: "
             f"N=430, min={EXPECTED[k]['min']}, balance={EXPECTED[k]['balance']:.2f}."
         )
     cands = sorted(cands, key=lambda c: (c.score, str(c.path), c.source), reverse=True)
@@ -451,6 +455,44 @@ def format_p(p: float) -> str:
     return f"{p:.4f}"
 
 
+def categorical_sex_effects(values: np.ndarray, labels: np.ndarray) -> Dict[str, float]:
+    """Pearson chi-square association and Cramer's V for sex versus subtype."""
+    df = pd.DataFrame({
+        "sex": values,
+        "subtype": labels.astype(int),
+    })
+
+    df["sex"] = df["sex"].astype(str).str.strip()
+    df = df[
+        df["sex"].notna()
+        & (~df["sex"].str.lower().isin(["", "nan", "none", "na"]))
+    ]
+
+    table = pd.crosstab(df["subtype"], df["sex"])
+
+    if table.shape[0] < 2 or table.shape[1] < 2:
+        raise ValueError("Sex-subtype contingency table must have at least 2 rows and 2 columns.")
+
+    chi2, p_raw, dof, expected = stats.chi2_contingency(
+        table.to_numpy(),
+        correction=False,
+    )
+
+    n = int(table.to_numpy().sum())
+    denom = n * min(table.shape[0] - 1, table.shape[1] - 1)
+    cramers_v = math.sqrt(float(chi2) / denom) if denom > 0 else float("nan")
+
+    return {
+        "n": n,
+        "chi_square": float(chi2),
+        "df": int(dof),
+        "p_raw": float(p_raw),
+        "cramers_v": float(cramers_v),
+        "min_expected_count": float(np.min(expected)),
+        "n_expected_lt5": int(np.sum(expected < 5)),
+    }
+
+
 def ensure_ids(candidate: LabelCandidate, fallback_ids: Optional[np.ndarray]) -> np.ndarray:
     ids = candidate.ids if candidate.ids is not None else fallback_ids
     if ids is None:
@@ -464,15 +506,6 @@ def ensure_ids(candidate: LabelCandidate, fallback_ids: Optional[np.ndarray]) ->
     if len(set(normed.tolist())) != 430:
         raise RuntimeError(f"Subject IDs for {candidate.path} are not 430 unique values.")
     return normed
-
-
-
-def safe_relative_path(path: Path, root: Path) -> str:
-    """Return a project-relative path without exposing a private machine root."""
-    try:
-        return str(path.resolve().relative_to(root.resolve()))
-    except ValueError:
-        return path.name
 
 
 def main() -> int:
@@ -496,7 +529,7 @@ def main() -> int:
     label_cands = scan_label_candidates(root)
     selected: Dict[int, LabelCandidate] = {}
     for k in (4, 5, 6):
-        print(f"Saved K={k} candidates matching the expected K-selection signature:")
+        print(f"Saved K={k} candidates matching Table 9 signature:")
         for c in sorted(label_cands[k], key=lambda x: (x.score, str(x.path)), reverse=True)[:20]:
             print(f"  score={c.score:4d} sizes={c.signature[3]}  {c.path} [{c.source}]")
         selected[k] = choose_candidate(label_cands[k], k)
@@ -613,11 +646,13 @@ def main() -> int:
     available_order = [v for v in variable_order if v in clinical.vars]
     if "age" not in available_order or "ehq" not in available_order:
         raise RuntimeError("Age and EHQ columns are required.")
+    if "sex" not in clinical.vars:
+        raise RuntimeError("A sex column is required for the categorical held-out analysis.")
     if len(available_order) < 6:
         missing_vars = [v for v in variable_order if v not in available_order]
         raise RuntimeError(
             "The clinical file does not contain all six variables required to reproduce "
-            "the six-variable BH-FDR family. Missing: " + ", ".join(missing_vars)
+            "the manuscript's six-variable BH-FDR family. Missing: " + ", ".join(missing_vars)
         )
 
     for k in (4, 5, 6):
@@ -640,6 +675,38 @@ def main() -> int:
             r["fdr_family_size"] = len(k_rows)
             all_rows.append(r)
 
+    # --------------------------------------------------------
+    # Held-out categorical sex analysis.
+    # Sex is analysed separately from the six continuous
+    # variables above. BH-FDR correction is applied across
+    # the three neighboring K=4/5/6 sex tests.
+    # --------------------------------------------------------
+    sex_rows: List[Dict[str, object]] = []
+
+    for k in (4, 5, 6):
+        ids = aligned_ids_by_k[k]
+        labels = aligned_labels[k]
+        ordered = cdf.loc[ids]
+
+        sex_col = clinical.vars["sex"]
+        sex_values = ordered[sex_col].to_numpy()
+
+        res = categorical_sex_effects(sex_values, labels)
+
+        sex_rows.append({
+            "K": k,
+            "source_column": sex_col,
+            **res,
+        })
+
+    sex_adj = bh_fdr([float(r["p_raw"]) for r in sex_rows])
+
+    for r, adj in zip(sex_rows, sex_adj):
+        r["fdr_p"] = float(adj)
+        r["fdr_family_size"] = 3
+
+    sex_df = pd.DataFrame(sex_rows)
+
     all_df = pd.DataFrame(all_rows)
     all_path = outdir / "k456_all_variable_associations.csv"
     all_df.to_csv(all_path, index=False)
@@ -648,6 +715,9 @@ def main() -> int:
     held_path = outdir / "k456_heldout_associations.csv"
     held.to_csv(held_path, index=False)
 
+    sex_path = outdir / "k456_sex_association_summary.csv"
+    sex_df.to_csv(sex_path, index=False)
+
     wide_rows = []
     for k in (4, 5, 6):
         row: Dict[str, object] = {"K": k}
@@ -655,6 +725,16 @@ def main() -> int:
             r = held[(held["K"] == k) & (held["variable"] == var)].iloc[0]
             for field in ("n", "eta_squared", "omega_squared", "anova_p_raw", "anova_fdr_p", "kruskal_p_raw", "kruskal_fdr_p"):
                 row[f"{var}_{field}"] = r[field]
+
+        sr = sex_df[sex_df["K"] == k].iloc[0]
+        row["sex_chi_square"] = sr["chi_square"]
+        row["sex_df"] = sr["df"]
+        row["sex_p_raw"] = sr["p_raw"]
+        row["sex_fdr_p"] = sr["fdr_p"]
+        row["sex_cramers_v"] = sr["cramers_v"]
+        row["sex_min_expected_count"] = sr["min_expected_count"]
+        row["sex_expected_lt5"] = sr["n_expected_lt5"]
+
         wide_rows.append(row)
     wide = pd.DataFrame(wide_rows)
     wide_path = outdir / "k456_heldout_robustness_wide.csv"
@@ -688,42 +768,22 @@ def main() -> int:
     rich_path = outdir / "k456_heldout_effect_rows_eta_omega.tex"
     rich_path.write_text("\n".join(latex_rich) + "\n", encoding="utf-8")
 
-    sources = []
-    for k in (4, 5, 6):
-        c = selected[k]
-        sources.append({
-            "K": k,
-            "label_path": safe_relative_path(c.path, root),
-            "label_source": c.source,
-            "score": c.score,
-            "cluster_sizes": list(c.signature[3]),
-            "min_cluster_size": c.signature[1],
-            "balance": c.signature[2],
-        })
-    pd.DataFrame(sources).to_csv(outdir / "selected_saved_label_sources.csv", index=False)
-
-    report = {
-        "project_root": ".",
-        "clinical_file": safe_relative_path(clinical.path, root),
-        "clinical_id_column": clinical.id_col,
-        "clinical_variable_columns": clinical.vars,
-        "fdr_family_variables": available_order,
-        "alignment_mode": alignment_mode,
-        "labels": sources,
-        "statement": "All association statistics were computed from saved K-selection labels; no representation-learning or clustering stage was rerun.",
-    }
-    (outdir / "verification_manifest.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    # Absolute local input paths and subject identifiers are intentionally
+    # not written to public outputs.
 
     print("\n" + "=" * 88)
     print("FINAL HELD-OUT ROBUSTNESS RESULTS")
     print("=" * 88)
     print(wide.to_string(index=False))
-    print("\nLaTeX rows for the K=4/5/6 held-out robustness table:")
+    print("\nLaTeX rows for the held-out robustness table:")
     print(latex_path.read_text(encoding="utf-8"))
     print("Saved files:")
-    for p in (all_path, held_path, wide_path, latex_path, rich_path, outdir / "selected_saved_label_sources.csv", outdir / "verification_manifest.json"):
+    print("\nSex association summary:")
+    print(sex_df.to_string(index=False))
+    print("\nSaved files:")
+    for p in (all_path, held_path, sex_path, wide_path, latex_path, rich_path):
         print(f"  {p}")
-    print("\nDONE. Aggregate held-out statistics were generated from verified saved labels.")
+    print("\nDONE.")
     return 0
 
 
