@@ -222,8 +222,8 @@ Two complementary analyses are reported:
 1. An unrestricted nested model-selection analysis in which candidate
    `alpha` and `K` configurations are selected using outer-development
    subjects and evaluated on held-out subjects.
-2. A prespecified held-out evaluation using `alpha=0.6` and `K=5`, where
-   the configuration is fixed rather than selected from competing values.
+2. A held-out evaluation of the previously retained `alpha=0.6` and `K=5` configuration,
+   where the configuration is fixed rather than selected from competing values.
 
 The corresponding public aggregate outputs are available in
 `results/table/`:
