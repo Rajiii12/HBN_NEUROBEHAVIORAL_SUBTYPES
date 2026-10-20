@@ -1,0 +1,37 @@
+Measure,Value
+External cohort,MIPDB
+Final subjects,91
+Retained recordings,825
+Validation branch,EEG-only external component validation
+Graph K,12
+VGAE hidden dimension,64
+VGAE latent dimension,16
+UMAP n_neighbors,30
+Primary K,5
+Primary silhouette,0.6749931573867798
+Primary Davies-Bouldin,0.39129265028320426
+Primary Calinski-Harabasz,523.0057983398438
+Primary Dunn index,0.11738814320498533
+Minimum cluster size,14
+Maximum cluster size,33
+Cluster balance ratio,2.357142857142857
+Subsample runs,100
+Subsample ARI mean,0.6727039170896026
+Subsample NMI mean,0.8218469593189982
+Bootstrap runs,100
+Bootstrap ARI mean,0.6504323636543904
+Bootstrap NMI mean,0.8009800513685512
+K4 silhouette,0.6362795233726501
+K5 silhouette,0.6749931573867798
+K6 silhouette,0.6419005990028381
+K4 Davies-Bouldin,0.4273137840945897
+K5 Davies-Bouldin,0.3912926502832042
+K6 Davies-Bouldin,0.4207592405393733
+Age ANOVA p,0.055835250227623416
+Age Kruskal-Wallis p,0.01525603711685748
+Age eta squared,0.10056814857367781
+Age omega squared,0.058126195580507654
+Sex chi-square,2.1637522193132916
+Sex p,0.7056706535765356
+Sex Cramer's V,0.1541995360418788
+Handedness tested,No
