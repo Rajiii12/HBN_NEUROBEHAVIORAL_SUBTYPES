@@ -238,3 +238,9 @@ Participant identifiers, subject-level assignments, embeddings, model
 weights, and private fold-membership files are not included.
 
 <!-- NESTED_ALPHA_K_VALIDATION_END -->
+
+## External validation
+
+**MIPDB:** External EEG subtype analysis of 91 participants with K=5; the corresponding [Python scripts](external_validation/MIPDB/scripts/) and [aggregate results](external_validation/MIPDB/results/) are provided.
+
+**TDBRAIN:** External EEG–NEO-FFI subtype analysis of 85 participants with K=6; the corresponding [Python scripts](external_validation/TDBRAIN/scripts/) and [aggregate results](external_validation/TDBRAIN/results/) are provided.
